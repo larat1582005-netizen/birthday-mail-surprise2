@@ -1,0 +1,430 @@
+/* =========================================================
+   COLOR PALETTE
+   -> Change ONLY these variables to adjust the pink theme.
+   -> pink-bg      : page/background color
+   -> pink-light   : lightest pink (slot metal highlight, card bg)
+   -> pink-mid     : dusty pink (envelope body, buttons)
+   -> pink-dark    : deeper dusty pink (flap, text accents, seal)
+   -> pink-accent  : soft accent pink (details, stickers)
+   -> text-dark    : dark rose color used for headings/text
+========================================================== */
+:root{
+  --pink-bg: #fdeef2;
+  --pink-bg-2: #ffe3ec;
+  --pink-light: #fbdce6;
+  --pink-mid: #e3a4b8;
+  --pink-dark: #b76e83;
+  --pink-accent: #f3c6d3;
+  --text-dark: #8a4a5c;
+  --white: #fff9fb;
+}
+
+*{ box-sizing: border-box; }
+
+html,body{
+  margin:0;
+  padding:0;
+  width:100%;
+  min-height:100%;
+  font-family: 'Georgia', 'Times New Roman', serif;
+  background: linear-gradient(180deg, var(--pink-bg-2), var(--pink-bg));
+  color: var(--text-dark);
+  overflow-x:hidden;
+}
+
+#app{
+  position:relative;
+  width:100%;
+  min-height:100vh;
+}
+
+/* ---------- Scene handling ---------- */
+.scene{
+  display:none;
+  min-height:100vh;
+  width:100%;
+  flex-direction:column;
+  align-items:center;
+  justify-content:flex-start;
+  padding:8vh 5% 5%;
+  animation: fadeIn .6s ease;
+}
+.scene.is-active{
+  display:flex;
+}
+@keyframes fadeIn{
+  from{ opacity:0; transform: translateY(10px); }
+  to{ opacity:1; transform: translateY(0); }
+}
+
+/* ---------- Shared text styles ---------- */
+.site-title{
+  font-size: clamp(20px, 4vw, 30px);
+  letter-spacing: 2px;
+  color: var(--text-dark);
+  margin: 0 0 40px 0;
+  text-align:center;
+}
+
+.hint-text{
+  margin-top: 22px;
+  font-size: 14px;
+  color: var(--text-dark);
+  text-align:center;
+}
+.hidden{ display:none !important; }
+
+.cta-btn{
+  margin-top: 46px;
+  padding: 14px 26px;
+  border:none;
+  border-radius: 30px;
+  background: var(--pink-dark);
+  color: var(--white);
+  font-family: inherit;
+  font-size: 14px;
+  letter-spacing: .5px;
+  cursor:pointer;
+  box-shadow: 0 6px 14px rgba(183,110,131,.35);
+  transition: transform .2s ease, background .3s ease;
+}
+.cta-btn:hover{ transform: translateY(-2px); background: var(--pink-mid); }
+.cta-btn:active{ transform: translateY(0); }
+
+.editable-text{
+  /* wrap around any editable placeholder text so it's easy to find/replace */
+  color: var(--text-dark);
+}
+
+/* =========================================================
+   SCENE 1 : MAIL SLOT
+========================================================== */
+.mail-slot-wrap{
+  position:relative;
+  width: min(320px, 80vw);
+  height: 200px;
+  margin: 0 auto;
+}
+
+.mail-slot{
+  position:relative;
+  z-index:3;
+  width:100%;
+  height: 46px;
+  border-radius: 10px;
+  background: linear-gradient(180deg, var(--pink-light), var(--pink-accent) 50%, var(--pink-light));
+  box-shadow:
+    0 6px 10px rgba(183,110,131,.25),
+    inset 0 2px 3px rgba(255,255,255,.8),
+    inset 0 -3px 4px rgba(183,110,131,.3);
+}
+.mail-slot-hole{
+  position:absolute;
+  top: 50%;
+  left: 8%;
+  width: 84%;
+  height: 8px;
+  transform: translateY(-50%);
+  background: var(--pink-dark);
+  border-radius: 4px;
+  opacity:.6;
+}
+
+/* The envelope hidden behind/inside the slot, revealed in stages via JS-controlled classes */
+.envelope-peek{
+  position:absolute;
+  top: 40px;
+  left:50%;
+  width: 78%;
+  max-width: 260px;
+  height: 150px;
+  transform: translate(-50%, -100%) scale(.96);
+  background: linear-gradient(160deg, var(--pink-mid), var(--pink-dark));
+  border-radius: 4px;
+  box-shadow: 0 10px 18px rgba(138,74,92,.3);
+  z-index:2;
+  opacity:0;
+  transition: transform 0.9s cubic-bezier(.5,.1,.3,1), opacity .5s ease;
+}
+.env-flap-lines{
+  position:absolute;
+  inset:0;
+  background:
+    linear-gradient(to bottom right, transparent 49.3%, rgba(255,255,255,.18) 50%, transparent 50.7%),
+    linear-gradient(to bottom left, transparent 49.3%, rgba(255,255,255,.18) 50%, transparent 50.7%);
+}
+.seal{
+  position:absolute;
+  top:14px;
+  left:50%;
+  width:34px;
+  height:34px;
+  transform: translateX(-50%);
+  background: radial-gradient(circle at 35% 30%, var(--pink-accent), var(--pink-dark) 70%);
+  border-radius:50%;
+  box-shadow: 0 3px 6px rgba(0,0,0,.2), inset 0 0 0 2px rgba(255,255,255,.25);
+}
+
+/* Stage 2: envelope starts peeking out of the slot */
+#scene-mail[data-stage="2"] .envelope-peek{
+  opacity:1;
+  transform: translate(-50%, -20%) scale(1);
+}
+
+/* Stage 3: envelope fully out, resting below the slot */
+#scene-mail[data-stage="3"] .envelope-peek{
+  opacity:1;
+  transform: translate(-50%, 55%) scale(1);
+  cursor:pointer;
+}
+
+/* =========================================================
+   SCENE 2 : OPENED ENVELOPE
+========================================================== */
+.envelope-open-wrap{
+  position:relative;
+  width: min(340px, 85vw);
+  margin-top: 30px;
+  display:flex;
+  justify-content:center;
+}
+
+.envelope-3d{
+  position:relative;
+  width:100%;
+  height: 210px;
+  perspective: 900px;
+}
+
+.env-back{
+  position:absolute;
+  left:0; right:0; bottom:0;
+  height: 70%;
+  background: linear-gradient(160deg, var(--pink-mid), var(--pink-dark));
+  border-radius: 4px;
+  z-index:1;
+}
+
+.letter-peek{
+  position:absolute;
+  left:50%;
+  bottom: 18%;
+  width: 78%;
+  transform: translate(-50%, 10%);
+  background: var(--white);
+  border-radius: 3px;
+  padding: 14px 10px 8px;
+  box-shadow: 0 8px 16px rgba(138,74,92,.25);
+  z-index:2;
+  cursor:pointer;
+  text-align:center;
+  transition: transform .25s ease;
+}
+.letter-peek:hover{ transform: translate(-50%, 4%); }
+
+.letter-peek-greeting{
+  margin: 0 0 8px;
+  font-family: 'Brush Script MT', cursive;
+  font-size: 20px;
+  color: var(--text-dark);
+}
+.letter-peek-photos{
+  display:flex;
+  gap:6px;
+  justify-content:center;
+}
+.peek-photo{
+  width: 46%;
+  height: 60px;
+  object-fit: cover;
+  border: 3px solid var(--white);
+  outline: 1px solid var(--pink-accent);
+  box-shadow: 0 3px 6px rgba(0,0,0,.15);
+}
+.photo-a{ transform: rotate(-4deg); }
+.photo-b{ transform: rotate(3deg); }
+
+.env-pocket-left,
+.env-pocket-right{
+  position:absolute;
+  bottom:0;
+  width:50%;
+  height: 70%;
+  background: var(--pink-mid);
+  z-index:3;
+}
+.env-pocket-left{
+  left:0;
+  clip-path: polygon(0 100%, 0 0, 100% 100%);
+  background: linear-gradient(120deg, var(--pink-mid), var(--pink-dark));
+}
+.env-pocket-right{
+  right:0;
+  clip-path: polygon(100% 100%, 100% 0, 0 100%);
+  background: linear-gradient(240deg, var(--pink-mid), var(--pink-dark));
+}
+
+.env-flap{
+  position:absolute;
+  top:0; left:0; right:0;
+  height: 55%;
+  clip-path: polygon(0 0, 100% 0, 50% 100%);
+  background: linear-gradient(160deg, var(--pink-dark), var(--pink-mid));
+  transform-origin: top center;
+  transform: rotateX(0deg);
+  transition: transform .8s ease;
+  z-index:4;
+}
+.env-flap .seal{
+  top: 34%;
+  z-index:5;
+}
+
+/* "opened" state toggled by JS */
+#envelope3d.is-open .env-flap{
+  transform: rotateX(180deg);
+  z-index:1;
+}
+#envelope3d.is-open .env-pocket-left,
+#envelope3d.is-open .env-pocket-right{
+  z-index:3;
+}
+#envelope3d.is-open .letter-peek{
+  transform: translate(-50%, -55%);
+}
+#envelope3d.is-open .letter-peek:hover{
+  transform: translate(-50%, -60%);
+}
+
+.cake-deco{
+  position:absolute;
+  right: -10px;
+  bottom: 4px;
+  opacity:0;
+  transform: scale(.6);
+  transition: opacity .5s ease .4s, transform .5s ease .4s;
+}
+#envelope3d.is-open ~ .cake-deco,
+.envelope-open-wrap .cake-deco.is-visible{
+  opacity:1;
+  transform: scale(1);
+}
+
+/* =========================================================
+   SCENE 3 : FULL LETTER PAGE
+========================================================== */
+#scene-letter{
+  justify-content:center;
+  padding-top: 6vh;
+}
+.scrapbook{
+  position:relative;
+  width: min(640px, 92vw);
+  min-height: 520px;
+  margin: 0 auto;
+}
+
+.letter-card{
+  position:relative;
+  z-index:5;
+  margin: 40px auto 0;
+  width: min(300px, 78vw);
+  background: var(--white);
+  border-radius: 4px;
+  padding: 26px 22px 20px;
+  box-shadow: 0 10px 24px rgba(138,74,92,.25);
+  text-align:center;
+  animation: popIn .6s ease;
+}
+@keyframes popIn{
+  from{ opacity:0; transform: scale(.85) translateY(10px); }
+  to{ opacity:1; transform: scale(1) translateY(0); }
+}
+
+.letter-greeting{
+  font-family: 'Brush Script MT', cursive;
+  font-size: 26px;
+  margin: 0 0 12px;
+  color: var(--text-dark);
+}
+.letter-body{
+  font-size: 14px;
+  line-height: 1.7;
+  margin: 0 0 16px;
+  color: var(--text-dark);
+}
+.letter-signature{
+  font-family: 'Brush Script MT', cursive;
+  font-size: 18px;
+  margin:0;
+  color: var(--text-dark);
+}
+
+/* Scattered polaroid photos */
+.polaroid{
+  position:absolute;
+  width: 110px;
+  height: 130px;
+  object-fit: cover;
+  background: var(--white);
+  border: 6px solid var(--white);
+  border-bottom-width: 20px;
+  box-shadow: 0 8px 16px rgba(138,74,92,.25);
+  z-index:2;
+}
+.p1{ top: 0%;   left: 0%;   transform: rotate(-8deg); }
+.p2{ top: 32%;  left: 6%;   transform: rotate(6deg); }
+.p3{ top: 62%;  left: 0%;   transform: rotate(-5deg); }
+.p4{ top: -2%;  right: 0%;  transform: rotate(7deg); }
+.p5{ top: 34%;  right: 2%;  transform: rotate(-6deg); }
+
+/* Decorative stickers */
+.sticker{
+  position:absolute;
+  color: var(--pink-dark);
+  z-index:3;
+  pointer-events:none;
+}
+.star{ font-size: 20px; }
+.s1{ top: 4%; left: 34%; }
+.s2{ top: 10%; left: 40%; font-size:14px; }
+.heart{ font-size: 18px; }
+.h1{ top: 18%; left: 30%; }
+.h2{ top: 40%; right: 28%; }
+.hat{ top: 6%; right: 22%; }
+.cake-deco-letter{
+  opacity:1;
+  transform:none;
+  bottom: 6%;
+  left: 40%;
+  right:auto;
+}
+
+/* =========================================================
+   FALLBACK STYLING FOR MISSING IMAGES
+   Shown automatically if a placeholder photo path is not found,
+   so the layout still looks complete until real photos are added.
+========================================================== */
+.img-fallback{
+  background: repeating-linear-gradient(
+      45deg,
+      var(--pink-light),
+      var(--pink-light) 10px,
+      var(--pink-accent) 10px,
+      var(--pink-accent) 20px
+  );
+}
+
+/* =========================================================
+   RESPONSIVE ADJUSTMENTS
+========================================================== */
+@media (max-width: 480px){
+  .scene{ padding-top: 6vh; }
+  .mail-slot-wrap{ height: 170px; }
+  .envelope-open-wrap{ margin-top: 20px; }
+  .polaroid{ width: 84px; height: 100px; border-width:5px; border-bottom-width:16px; }
+  .letter-card{ padding: 20px 16px 16px; }
+  .letter-greeting{ font-size:22px; }
+  .letter-body{ font-size:13px; }
+  .scrapbook{ min-height: 440px; }
+}

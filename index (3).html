@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Birthday Mail Surprise</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<!-- =========================================================
+     APP CONTAINER
+     There are 3 "scenes" that match the reference video:
+     1) scene-mail   -> mail slot with envelope sliding out
+     2) scene-open   -> opened envelope with letter/photos peeking out
+     3) scene-letter -> final full letter page with scattered photos
+     JS (script.js) toggles which scene is visible.
+========================================================== */-->
+<div id="app">
+
+  <!-- ============== SCENE 1: MAIL SLOT ============== -->
+  <section id="scene-mail" class="scene is-active">
+
+    <!-- TEXT: Title above the mail slot -->
+    <h1 class="site-title">YOU GOT A MAIL!</h1>
+
+    <div class="mail-slot-wrap">
+      <!-- Metal mail slot -->
+      <div class="mail-slot">
+        <div class="mail-slot-hole"></div>
+      </div>
+
+      <!-- Envelope that slides out of the slot -->
+      <div class="envelope-peek" id="envelopePeek">
+        <div class="env-flap-lines"></div>
+        <div class="seal"></div>
+      </div>
+    </div>
+
+    <!-- TEXT: Button label changes at each stage via script.js -->
+    <button id="btnStage" class="cta-btn">click here to claim your mail!</button>
+
+    <!-- TEXT: caption shown only on the final "tap envelope" stage -->
+    <p id="tapHint" class="hint-text hidden">tap on the envelope to open it!</p>
+  </section>
+
+  <!-- ============== SCENE 2: OPENED ENVELOPE ============== -->
+  <section id="scene-open" class="scene">
+
+    <h1 class="site-title">YOU GOT A MAIL!</h1>
+
+    <div class="envelope-open-wrap">
+      <div class="envelope-3d" id="envelope3d">
+
+        <!-- Back panel of the envelope -->
+        <div class="env-back"></div>
+
+        <!-- Letter + photos peeking out (click to go to full letter) -->
+        <div class="letter-peek" id="letterPeek" tabindex="0" role="button" aria-label="Open letter">
+          <!-- TEXT: greeting shown peeking out of the envelope -->
+          <p class="letter-peek-greeting">Dear <span class="editable-text">[Name]</span>,</p>
+          <div class="letter-peek-photos">
+            <!-- IMAGE PLACEHOLDER 1: replace images/photo1.jpg with your own photo -->
+            <img src="images/photo1.jpg" alt="Memory photo 1" class="peek-photo photo-a" onerror="this.classList.add('img-fallback')">
+            <!-- IMAGE PLACEHOLDER 2: replace images/photo2.jpg with your own photo -->
+            <img src="images/photo2.jpg" alt="Memory photo 2" class="peek-photo photo-b" onerror="this.classList.add('img-fallback')">
+          </div>
+        </div>
+
+        <!-- Front pocket triangles (sides of envelope) -->
+        <div class="env-pocket-left"></div>
+        <div class="env-pocket-right"></div>
+
+        <!-- Flap that opens upward -->
+        <div class="env-flap" id="envFlap">
+          <div class="seal"></div>
+        </div>
+      </div>
+
+      <!-- Small birthday cake decoration next to the envelope -->
+      <div class="cake-deco" aria-hidden="true">
+        <svg viewBox="0 0 64 64" width="64" height="64">
+          <rect x="14" y="34" width="36" height="20" rx="3" fill="var(--pink-mid)"/>
+          <rect x="14" y="34" width="36" height="6" fill="var(--pink-light)"/>
+          <rect x="10" y="50" width="44" height="6" rx="2" fill="var(--pink-dark)"/>
+          <rect x="30" y="18" width="4" height="14" fill="var(--pink-dark)"/>
+          <ellipse cx="32" cy="15" rx="3" ry="5" fill="#f7c9a6"/>
+          <polygon points="20,34 24,26 28,34" fill="var(--pink-accent)"/>
+          <polygon points="36,34 40,26 44,34" fill="var(--pink-accent)"/>
+        </svg>
+      </div>
+    </div>
+
+    <!-- TEXT: hint under the opened envelope -->
+    <p class="hint-text">(click on the letter to read it!)</p>
+  </section>
+
+  <!-- ============== SCENE 3: FULL LETTER PAGE ============== -->
+  <section id="scene-letter" class="scene">
+    <div class="scrapbook">
+
+      <!-- Decorative scattered photos (polaroid style) -->
+      <!-- IMAGE PLACEHOLDER 3-7: replace images/photo1.jpg ... photo5.jpg -->
+      <img src="images/photo1.jpg" alt="Memory photo 1" class="polaroid p1" onerror="this.classList.add('img-fallback')">
+      <img src="images/photo2.jpg" alt="Memory photo 2" class="polaroid p2" onerror="this.classList.add('img-fallback')">
+      <img src="images/photo3.jpg" alt="Memory photo 3" class="polaroid p3" onerror="this.classList.add('img-fallback')">
+      <img src="images/photo4.jpg" alt="Memory photo 4" class="polaroid p4" onerror="this.classList.add('img-fallback')">
+      <img src="images/photo5.jpg" alt="Memory photo 5" class="polaroid p5" onerror="this.classList.add('img-fallback')">
+
+      <!-- Small decorative stickers (stars / hearts / party hat) -->
+      <div class="sticker star s1">&#10022;</div>
+      <div class="sticker star s2">&#10022;</div>
+      <div class="sticker heart h1">&#10084;</div>
+      <div class="sticker heart h2">&#10084;</div>
+      <div class="sticker hat">
+        <svg viewBox="0 0 40 40" width="34" height="34">
+          <polygon points="20,4 32,34 8,34" fill="var(--pink-mid)"/>
+          <circle cx="20" cy="4" r="3" fill="var(--pink-dark)"/>
+        </svg>
+      </div>
+
+      <!-- Small cake decoration on the letter page -->
+      <div class="cake-deco cake-deco-letter" aria-hidden="true">
+        <svg viewBox="0 0 64 64" width="56" height="56">
+          <rect x="14" y="34" width="36" height="20" rx="3" fill="var(--pink-mid)"/>
+          <rect x="14" y="34" width="36" height="6" fill="var(--pink-light)"/>
+          <rect x="10" y="50" width="44" height="6" rx="2" fill="var(--pink-dark)"/>
+          <rect x="30" y="18" width="4" height="14" fill="var(--pink-dark)"/>
+          <ellipse cx="32" cy="15" rx="3" ry="5" fill="#f7c9a6"/>
+        </svg>
+      </div>
+
+      <!-- The letter card itself -->
+      <div class="letter-card">
+        <!-- TEXT: greeting - replace [Name] with the recipient's name -->
+        <h2 class="letter-greeting">Dear <span class="editable-text">[Name]</span>,</h2>
+
+        <!-- TEXT: main message - replace with your own birthday message -->
+        <p class="letter-body">
+          Happy Birthday!<br>
+          [Write your birthday message here.]
+        </p>
+
+        <!-- TEXT: signature - replace [Your Name] -->
+        <p class="letter-signature">- <span class="editable-text">[Your Name]</span></p>
+      </div>
+    </div>
+  </section>
+
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>
